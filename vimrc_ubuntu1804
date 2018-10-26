@@ -1,0 +1,132 @@
+
+" Vundle 
+set nocompatible
+filetype off
+
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+
+Plugin 'fatih/vim-go'
+Plugin 'scrooloose/syntastic'
+Plugin 'scrooloose/nerdtree'
+Plugin 'majutsushi/tagbar'
+Plugin 'Valloric/YouCompleteMe'
+Plugin 'https://github.com/powerline/fonts.git'
+Plugin 'bling/vim-airline'
+Plugin 'fholgado/minibufexpl.vim'
+Plugin 'altercation/vim-colors-solarized'
+Plugin 'tomasr/molokai'
+Plugin 'vim-scripts/Mark--Karkat'
+Plugin 'nathanaelkane/vim-indent-guides'
+Plugin 'dkprice/vim-easygrep'
+Plugin 'scrooloose/nerdcommenter'
+Plugin 'mileszs/ack.vim'
+Plugin 'ternjs/tern_for_vim'
+Plugin 'tpope/vim-surround'
+Plugin 'jelera/vim-javascript-syntax'
+Plugin 'pangloss/vim-javascript'
+Plugin 'mxw/vim-jsx'
+Plugin 'leshill/vim-json'
+
+call vundle#end()
+
+filetype plugin indent on
+    
+" C language
+syntax enable
+syntax on
+set autoindent
+set cindent
+set softtabstop=4
+set tabstop=4
+set shiftwidth=4
+set expandtab
+set number
+set cscopequickfix=s-,c-,d-,i-,t-,e-
+set cc=80
+set foldmethod=indent
+
+" indent guide
+let g:indent_guides_enable_on_vim_startup = 1
+let g:indent_guides_start_level = 2
+let g:indent_guides_guide_size = 1
+let g:indent_guides_auto_colors = 0
+autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd  guibg=darkgrey  ctermbg=darkgrey
+autocmd VimEnter,Colorscheme * :hi IndentGuidesEven guibg=lightgrey ctermbg=lightgrey
+
+" Mac pro book interface
+colorscheme molokai  
+set encoding=utf-8
+set fileencoding=utf-8
+set background=dark
+set cursorline
+set ruler
+set hlsearch
+set laststatus=2
+let g:airline_powerline_fonts=1
+set guifont=Ubuntu\ Mono\ derivative\ Powerline\ 18 
+
+" Keyboard mapping
+nmap <F4> :cp<CR>
+nmap <F5> :cn<CR>
+nmap <F8> :w<CR>
+nmap <F10> :wq<CR>
+nmap <F9> :q!<CR>
+nmap <F7> :NERDTreeToggle<CR>
+nmap <F6> :TagbarToggle<CR>
+let NERDTreeShowBookmarks=1
+let NERDTreeWinPos="right"
+let g:tagbar_left=1
+
+" Go lang tagbar
+let g:tagbar_type_go = {
+    \ 'ctagstype' : 'go',
+    \ 'kinds'     : [
+        \ 'p:package',
+        \ 'i:imports:1',
+        \ 'c:constants',
+        \ 'v:variables',
+        \ 't:types',
+        \ 'n:interfaces',
+        \ 'w:fields',
+        \ 'e:embedded',
+        \ 'm:methods',
+        \ 'r:constructor',
+        \ 'f:functions'
+    \ ],
+    \ 'sro' : '.',
+    \ 'kind2scope' : {
+        \ 't' : 'ctype',
+        \ 'n' : 'ntype'
+    \ },
+    \ 'scope2kind' : {
+        \ 'ctype' : 't',
+        \ 'ntype' : 'n'
+    \ },
+    \ 'ctagsbin'  : 'gotags',
+    \ 'ctagsargs' : '-sort -silent'
+\ }
+
+let mapleader=";"
+" Go lang syntax highlight
+let g:go_highlight_functions = 1
+let g:go_highlight_methods = 1
+let g:go_highlight_structs = 1
+let g:go_highlight_interfaces = 1
+let g:go_highlight_operators = 1
+let g:go_highlight_build_constraints = 1
+
+" Go with syntastic
+let g:syntastic_go_checkers = ['golint', 'govet', 'errcheck']
+let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
+
+" Python with syntastic
+let g:ycm_python_binary_path = '/usr/bin/python3'
+
+" Java without syntastic 
+let g:syntastic_java_checkers = []
+
+" Java script
+let g:javascript_plugin_flow = 1
+let g:jsx_ext_required = 0
+
