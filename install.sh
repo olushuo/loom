@@ -1,33 +1,5 @@
 #!/bin/bash
 
-function usage() {
-    exec cat >&2 <<EO_USAGE
-usage: ${0##*/} [options]
-      -h, --help        display this help screen
-      -d, --defaults    use the default values wherever suggested
-EO_USAGE
-}
-
-if [ -z "${RUNNING_IN_SCRIPT}" ]; then
-	declare -x TEMP
-
-	# Parse command-line options
-	TEMP="$(getopt -a -o hid -l help,defaults, -n "${0##*/}" -- "$@")" || usage
-
-	eval set -- "${TEMP}"
-	while true; do
-		case "$1" in
-		-h|--help    )	usage;;
-		-d|--defaults)	__PROMPT_USES_DEFAULT="enabled"; shift;;
-			   --)	shift;                           break;;
-			    *)	die "Internal getopt error.";;
-		esac
-	done
-
-	# Log output to 'running_<script_name>.log'
-	RUNNING_IN_SCRIPT="true"
-fi
-
 #------------------------------------------------------------------------------------------------------------
 # Logging Utilities
 #------------------------------------------------------------------------------------------------------------
