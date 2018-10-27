@@ -4,16 +4,13 @@
 source $(dirname ${BASH_SOURCE})/trace.sh || die "Failed to find trace.sh"
 function usage() {
     echo "${0##*/} usage:"
-    echo "  ${0##*/} <version_number>"
+    echo "  ${0##*/} <version_number> <zsh_jdk_plugin_file>"
 }
 
-if [[ $# != 1 ]] ; then
+if [[ $# != 2 ]] ; then
     usage
     exit 1
-elif [[ $# == 1 && $1 == "-h" ]] ; then
-    usage
-    exit 0
-elif [[ $# == 1 ]] ; then
+else
     note "JDK $1 will be installed"
 fi
 
@@ -35,7 +32,7 @@ sudo tar -C /opt/java/${VERSION}/ -xzf /tmp/${JDK_PACKAGE}
 
 sudo rm -rf ${JDK_PACKAGE}
 
-JDK_PLUGIN="${HOME}/.oh-my-zsh/custom/java_plugin.zsh"
+JDK_PLUGIN=$2
 rm -f ${JDK_PLUGIN}
 
 echo "export JAVA_VERSION=${VERSION}" > ${JDK_PLUGIN}

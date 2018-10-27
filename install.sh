@@ -11,6 +11,8 @@ declare -x GoSupport
 declare -x JavaSupport
 declare -x RustSupport
 declare -x ZshInstalled="not"
+declare -x ZshGoPlugin="${HOME}/.oh-my-zsh/custom/golang_plugin.zsh"
+declare -x ZshJdkPlugin="${HOME}/.oh-my-zsh/custom/java_plugin.zsh"
 
 function usage() {
     echo "${0##*/} usage:"
@@ -98,23 +100,22 @@ if [ ${ALL} == "yes" ] || confirm "Enable Go support" y n y; then
         ZshInstalled="yes"
     fi
     info "Installing Go..."
-    bash $(dirname ${BASH_SOURCE})/go_install.sh ${GOVERSION}
+    bash $(dirname ${BASH_SOURCE})/go_install.sh ${GOVERSION} ${ZshJdkPlugin}
+    source ${ZshGoPlugin}
     GoSupport="--go-completer"
 fi
 
 if [ ${ALL} == "yes" ] || confirm "Enable Java support" y n y ; then
     if [ ${ZshInstalled} == "not" ] ; then
-        bash $(dirname ${BASH_SOURCE})/zsh_install.sh 
+        bash $(dirname ${BASH_SOURCE})/zsh_install.sh
         ZshInstalled="yes"
     fi
     info "Installing JDK..."
-    bash $(dirname ${BASH_SOURCE})/jdk_install.sh ${JAVAVERSION}
+    bash $(dirname ${BASH_SOURCE})/jdk_install.sh ${JAVAVERSION} ${ZshJdkPlugin}
+    source ${ZshJdkPlugin}
     JavaSupport="--java-completer"
 fi
 
-if [ ${ZshInstalled} == "yes" ] ; then
-    source ~/.zshrc 
-fi 
 info "Set up tern_for_vim..."
 cd ~/.vim/bundle/tern_for_vim
 npm install
