@@ -112,6 +112,9 @@ if [ ${ALL} == "yes" ] || confirm "Enable Java support" y n y ; then
     JavaSupport="--java-completer"
 fi
 
+if [ ${ZshInstalled} == "yes" ] ; then
+    source ~/.zshrc 
+fi 
 info "Set up tern_for_vim..."
 cd ~/.vim/bundle/tern_for_vim
 npm install

@@ -35,7 +35,7 @@ sudo tar -C /opt/java/${VERSION}/ -xzf /tmp/${JDK_PACKAGE}
 
 sudo rm -rf ${JDK_PACKAGE}
 
-JDK_PLUGIN="${HOME}/.oh-my-zsh/custom/JAVA_plugin.zsh"
+JDK_PLUGIN="${HOME}/.oh-my-zsh/custom/java_plugin.zsh"
 rm -f ${JDK_PLUGIN}
 
 echo "export JAVA_VERSION=${VERSION}" > ${JDK_PLUGIN}
