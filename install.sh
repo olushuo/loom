@@ -100,7 +100,7 @@ if [ ${ALL} == "yes" ] || confirm "Enable Go support" y n y; then
         ZshInstalled="yes"
     fi
     info "Installing Go..."
-    bash $(dirname ${BASH_SOURCE})/go_install.sh ${GOVERSION} ${ZshJdkPlugin}
+    bash $(dirname ${BASH_SOURCE})/go_install.sh ${GOVERSION} ${ZshGoPlugin}
     source ${ZshGoPlugin}
     GoSupport="--go-completer"
 fi
