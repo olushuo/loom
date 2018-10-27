@@ -5,6 +5,11 @@ source $(dirname ${BASH_SOURCE})/trace.sh || die "Failed to find trace.sh"
 declare -x ALL="no"
 declare -x GOVERSION="1.10.2"
 declare -x JAVAVERSION="1.8.0_172"
+declare -x CFamilySupport
+declare -x CSharpSupport
+declare -x GoSupport
+declare -x JavaSupport
+declare -x RustSupport
 
 function usage() {
     echo "${0##*/} usage:"
@@ -51,10 +56,12 @@ info "Installing all plugins..."
 vim +PluginInstall +qall
 
 info "Installing build-essential cmake python3-dev..." 
-sudo apt install -y build-essential cmake python3-dev
+sudo apt install -y build-essential cmake python3-dev ack
 
 if confirm "Enable C famaily language support..." y n y; then
-    sudo apt install -y exuberant-ctags cscope gdb g++ make 
+    sudo apt install -y exuberant-ctags cscope gdb gdb-doc g++ make 
+    CFamilySupport="--clang-completer"
+
 fi
 
 if [ ${ALL} == "yes" ] || confirm "Enable CSharp support..." y n y; then
@@ -66,11 +73,13 @@ if [ ${ALL} == "yes" ] || confirm "Enable CSharp support..." y n y; then
     sudo apt update
 
     sudo apt install -y mono-complete
+    CSharpSupport="--cs-completer"
 fi
 
 if confirm "Enable Go support" y n y; then
     info "Installing Go..."
     bash $(dirname ${BASH_SOURCE})/go_install.sh ${GOVERSION}
+    GoSupport="--go-completer"
 fi
 
 if [ ${ALL} == "yes" ] || confirm "Enable JavaScript support" y n y; then
@@ -81,12 +90,19 @@ fi
 
 if [ ${ALL} == "yes" ] || confirm "Enable Rust support" y n y; then
     curl https://sh.rustup.rs -sSf | sh
+    info "Installing cargo and some extra package..."
+    sudo apt install -y cargo cargo-doc  rust-doc rust-src \
+        libhttp-parser2.7.1 libstd-rust-1.28 libstd-rust-dev \
+        rust-gdb rustc rust-gdb rustc 
+    RustSupport="--rust-completer"
 fi
 
 if [ ${ALL} == "yes" ] || confirm "Enable Java support" y n y ; then
     info "Installing JDK..."
+    bash $(dirname ${BASH_SOURCE})/jdk_install.sh ${JAVAVERSION}
+    JavaSupport="--java-completer"
 fi
-exit
+
 info "Set up tern_for_vim..."
 cd ~/.vim/bundle/tern_for_vim
 npm install
@@ -102,10 +118,19 @@ sudo apt install -y cargo cargo-doc gdb-doc rust-doc rust-src \
 
 info "Compiling YouCompleteMe, it may take a while..."
 cd ~/.vim/bundle/YouCompleteMe
+if [ ! -z "${CSharpSupport}" ] && [ ! -z "${CFamilySupport}" ] \
+    && [ ! -z "${GoSupport}" ] && [ ! -z "${JavaSupport}" ] ; then
+    note "All languages are need to be supported"
+fi
+
 if [ ${ALL} == yes ] ; then
-    python3 install.py --all
+    debug_run python3 install.py --all
 else
-    python3 install.py ${CSharpSupport} ${CFamilySupport} ${GoSupport}
+    debug_run python3 install.py ${CSharpSupport} \
+        ${CFamilySupport} \
+        ${GoSupport} \
+        ${RustSupport} \
+        ${JavaSupport}
 fi
 
 info "Return to your home directory..."
