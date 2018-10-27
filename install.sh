@@ -3,13 +3,14 @@
 source $(dirname ${BASH_SOURCE})/trace.sh || die "Failed to find trace.sh"
 
 declare -x ALL="no"
-declare -x GOVERSION="1.10.2"
-declare -x JAVAVERSION="1.8.0_172"
+declare -x GOVERSION="1.11.1"
+declare -x JAVAVERSION="11.0.1"
 declare -x CFamilySupport
 declare -x CSharpSupport
 declare -x GoSupport
 declare -x JavaSupport
 declare -x RustSupport
+declare -x ZshInstalled="not"
 
 function usage() {
     echo "${0##*/} usage:"
@@ -34,7 +35,7 @@ fi
 
 confirmCont "So far, Loom is only tested on Ubuntu 1604/1804, are your sure you want to continue?" YES no
 
-if [ ${ALL} = "yes" ] || confirm "Vim and Git is needed" y n y ; then
+if [ ${ALL} = "yes" ] || confirm "Vim and Git are needed" y n y ; then
     sudo apt install -y vim git
 else
     die "Aborted installation, since Vim and Git is aboslutely necessary!" 
@@ -58,7 +59,7 @@ vim +PluginInstall +qall
 info "Installing build-essential cmake python3-dev..." 
 sudo apt install -y build-essential cmake python3-dev ack
 
-if confirm "Enable C famaily language support..." y n y; then
+if [ ${ALL} == "yes" ] || confirm "Enable C famaily language support..." y n y; then
     sudo apt install -y exuberant-ctags cscope gdb gdb-doc g++ make 
     CFamilySupport="--clang-completer"
 
@@ -76,12 +77,6 @@ if [ ${ALL} == "yes" ] || confirm "Enable CSharp support..." y n y; then
     CSharpSupport="--cs-completer"
 fi
 
-if confirm "Enable Go support" y n y; then
-    info "Installing Go..."
-    bash $(dirname ${BASH_SOURCE})/go_install.sh ${GOVERSION}
-    GoSupport="--go-completer"
-fi
-
 if [ ${ALL} == "yes" ] || confirm "Enable JavaScript support" y n y; then
     wget -qO- https://deb.nodesource.com/setup_10.x | sudo -E bash -
     sudo apt-get install -y nodejs
@@ -97,7 +92,21 @@ if [ ${ALL} == "yes" ] || confirm "Enable Rust support" y n y; then
     RustSupport="--rust-completer"
 fi
 
+if [ ${ALL} == "yes" ] || confirm "Enable Go support" y n y; then
+    if [ ${ZshInstalled} == "not" ] ; then
+        bash $(dirname ${BASH_SOURCE})/zsh_install.sh 
+        ZshInstalled="yes"
+    fi
+    info "Installing Go..."
+    bash $(dirname ${BASH_SOURCE})/go_install.sh ${GOVERSION}
+    GoSupport="--go-completer"
+fi
+
 if [ ${ALL} == "yes" ] || confirm "Enable Java support" y n y ; then
+    if [ ${ZshInstalled} == "not" ] ; then
+        bash $(dirname ${BASH_SOURCE})/zsh_install.sh 
+        ZshInstalled="yes"
+    fi
     info "Installing JDK..."
     bash $(dirname ${BASH_SOURCE})/jdk_install.sh ${JAVAVERSION}
     JavaSupport="--java-completer"
