@@ -3,6 +3,8 @@
 source $(dirname ${BASH_SOURCE})/trace.sh || die "Failed to find trace.sh"
 
 declare -x ALL="no"
+declare -x GOVERSION="1.10.2"
+declare -x JAVAVERSION="1.8.0_172"
 
 function usage() {
     echo "${0##*/} usage:"
@@ -23,14 +25,14 @@ elif [[ $# == 1 && $1 == "-a" ]] ; then
     ALL="yes"
 fi
 
-info "Loom is going to be installed..."
+ "Loom is going to be installed..."
 
 confirmCont "So far, Loom is only tested on Ubuntu 1604/1804, are your sure you want to continue?" YES no
 
 if [ ${ALL} = "yes" ] || confirm "Vim and Git is needed" y n y ; then
     sudo apt install -y vim git
 else
-    die "Aborted installation" 
+    die "Aborted installation, since Vim and Git is aboslutely necessary!" 
 fi
 
 info "Installing Vundle..."
@@ -52,7 +54,7 @@ info "Installing build-essential cmake python3-dev..."
 sudo apt install -y build-essential cmake python3-dev
 
 if confirm "Enable C famaily language support..." y n y; then
-    sudo apt install -y exuberant-ctags cscope
+    sudo apt install -y exuberant-ctags cscope gdb g++ make 
 fi
 
 if [ ${ALL} == "yes" ] || confirm "Enable CSharp support..." y n y; then
@@ -66,10 +68,9 @@ if [ ${ALL} == "yes" ] || confirm "Enable CSharp support..." y n y; then
     sudo apt install -y mono-complete
 fi
 
-exit
-
 if confirm "Enable Go support" y n y; then
     info "Installing Go..."
+    bash $(dirname ${BASH_SOURCE})/go_install.sh ${GOVERSION}
 fi
 
 if [ ${ALL} == "yes" ] || confirm "Enable JavaScript support" y n y; then
@@ -83,8 +84,9 @@ if [ ${ALL} == "yes" ] || confirm "Enable Rust support" y n y; then
 fi
 
 if [ ${ALL} == "yes" ] || confirm "Enable Java support" y n y ; then
+    info "Installing JDK..."
 fi
-
+exit
 info "Set up tern_for_vim..."
 cd ~/.vim/bundle/tern_for_vim
 npm install
@@ -100,7 +102,11 @@ sudo apt install -y cargo cargo-doc gdb-doc rust-doc rust-src \
 
 info "Compiling YouCompleteMe, it may take a while..."
 cd ~/.vim/bundle/YouCompleteMe
-python3 install.py --all
+if [ ${ALL} == yes ] ; then
+    python3 install.py --all
+else
+    python3 install.py ${CSharpSupport} ${CFamilySupport} ${GoSupport}
+fi
 
 info "Return to your home directory..."
 cd ~
